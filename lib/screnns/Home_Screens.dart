@@ -1,64 +1,61 @@
-import 'package:api_applications/Model/category_list.dart';
-import 'package:api_applications/abi_service/Api.dart';
 import 'package:flutter/material.dart';
-class HomeScreens extends StatefulWidget {
-  const HomeScreens({super.key});
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../Model/category_list.dart';
+import '../manger/app-cupit.dart';
+import '../manger/app_state.dart';
+import '../network/Api.dart';
+import '../widgets/proudect_item.dart';
+class HomeScreen extends StatefulWidget {
+  HomeScreen({super.key});
 
   @override
-  State<HomeScreens> createState() => _HomeScreensState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreensState extends State<HomeScreens> {
-  Api b = Api();
-  List<Article>? n;
-
+class _HomeScreenState extends State<HomeScreen> {
+  abi x= abi();
+  List<ProductCard>? v;
   @override
   void initState() {
-    get();
-    // TODO: implement initState
+   get();
     super.initState();
   }
 
   get()async{
-    n = await b.getNews();
+    v =await x.getNow();
     setState(() {
 
     });
-
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor:Colors.green,
-        title: Text('API',style: TextStyle(fontSize: 20,color: Colors.white),),
-        centerTitle: true,
-      ),
-      body:  n == null
-          ? Center(child: CircularProgressIndicator()):
-      ListView.builder(
-        itemCount: n!.length,
-        itemBuilder: (context, index) {
-          var article = n![index];
-          return Card(
-            margin: EdgeInsets.all(8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                article.urlToImage != null
-                    ? Image.network(article.urlToImage!, height: 150, fit: BoxFit.cover)
-                    : Placeholder(fallbackHeight: 150),
-                SizedBox(height: 8),
-                Text(article.title, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                SizedBox(height: 4),
-                Text(article.author ?? "Unknown Author", style: TextStyle(color: Colors.grey)),
-                SizedBox(height: 8),
-              ],
+
+    return BlocProvider(
+        create: (_) => Appcupit()..run(),
+        child: Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.green,
+              title: Text('Application of products'),
+              centerTitle: true,
             ),
-          );
-        },
-      )
-    );
-  }
-}
+            body: BlocBuilder<Appcupit, AppState>(
+                builder: (context, state) {
+                  if (state is loadingState) {
+                    return Center(child: CircularProgressIndicator());
+                  } else if (state is SuccessState) {
+                    return ListView.builder(
+                      itemCount: state.product.length,
+                      itemBuilder: (context, index) {
+                        return ProductItem(product: state.product[index]);
+                      },
+                    );
+                  } else if (state is ErrorState) {
+                    return Center(child: Text(state.message));
+                  }
+                  return Container(); // InitialState
+
+
+  })));
+}}

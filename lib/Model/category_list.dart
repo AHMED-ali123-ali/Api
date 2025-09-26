@@ -1,15 +1,24 @@
-class Article {
-  final String? id;
-  final String? author;
-  final String title;
-  final String description;
-  final String urlToImage;
 
-  Article({
-    this.id,
-    this.author,
+import 'package:flutter/material.dart';
+
+class ProductCard {
+  final dynamic id;
+  final String title;
+  final String slug;
+  final double price;
+  final dynamic image;
+
+  const ProductCard({
+    required this.id,
     required this.title,
-    required this.description,
-    required this.urlToImage,
+    required this.slug,
+    required this.price,
+    required this.image,
   });
 }
+
+
+
+
+
+
